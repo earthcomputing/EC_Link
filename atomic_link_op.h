@@ -75,11 +75,13 @@ extern "C" {
 
 typedef struct alo_regs {
   uint64_t reg[32] ;
+  uint64_t sent_value ;  // keep the sent value of alo_initiate for retry
   uint64_t result_buffer ;
-  uint64_t return_value ;  // keep the result value of alo_exec to simplify data transfer
+  uint64_t return_value ;  // keep the result value of alo_exec for retry
   uint32_t return_flag ;
   uint32_t flags ;
-  uint32_t state ;
+  uint32_t state ;        
+  uint32_t sent_flag ;
 } alo_regs_t ;
 
 
@@ -92,10 +94,12 @@ void alo_regs_init( __lmem volatile alo_regs_t *alr ) ;
 // Initiate Atomic Link Operation at source
 uint32_t alo_initiate( __lmem volatile alo_regs_t *alr, uint16_t opcode, uint16_t sr, uint64_t *s_value ) ;
 
-int alo_complete( __lmem volatile alo_regs_t *alr, uint16_t status, uint64_t r_value ) ;
+int alo_next( __lmem volatile alo_regs_t *alr, uint16_t status, uint64_t r_value ) ;
+
+int alo_complete( __lmem volatile alo_regs_t *alr ) ;
 
 // Execute Atomic Link Operation at destination 
-uint32_t alo_exec( __lmem volatile alo_regs_t *alr, uint16_t opcode, uint16_t dt, uint64_t s_value ) ;
+uint32_t alo_exec( __lmem volatile alo_regs_t *alr, uint16_t opcode, uint16_t dt, uint64_t s_value, uint64_t *r_value  ) ;
 
 int alo_state(__lmem volatile alo_regs_t *alr ) ;
 

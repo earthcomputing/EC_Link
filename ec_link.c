@@ -33,10 +33,32 @@ void ec_link_send( ec_link_reg_t *reg, ec_link_field_t *ret )
     ret->valid = 1 ; 
     ret->s_or_r = 1 ;  // SR side need to be resend
     ret->value = !reg->sr  ;
-
 }
 
-int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, ec_link_field_t *ret ) 
+int ec_link_recover( ec_link_reg_t *reg, ec_link_field_t *ret ) 
+{
+
+    int flag = 0 ;
+    ret->_raw = 0 ;
+
+    ret->valid = 1 ; 
+    ret->s_or_r = 0 ;
+    ret->value = reg->rr ;
+    ret->recover = 1 ;
+    switch( reg->state ) {
+        case ENTT_NIL:
+            ret->entt = 0 ;
+            break ;
+        case ENTT_Rb:
+            reg->state = ENTT_NIL ; // cancel ENTT 
+            ret->entt = FIELD_ENTA ;
+            flag |= ENTL_ACTION_ENTT_CLER ;
+            break ;
+    }
+    return flag ;
+}
+
+int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, int qfull, ec_link_field_t *ret ) 
 {
 	int flag = 0 ;
     ret->_raw = 0 ;
@@ -47,34 +69,60 @@ int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, ec_link
     	ret->valid = 1 ; 
     	ret->s_or_r = 0 ;
         ret->value = reg->rr = field.value ; 
-        //if( field.token ) reg->entt_bkoff = 0 ;
-        // Token is transfered on RR message
+        // Token is only transfered on RR message
         // Token is always transfered if ENTT queue is empty
-        if( !entt & reg->token ) {
-            ret->token = reg->token ;
-            reg->token = 0 ;
+        if( reg->token ) {
+            if( !entt ) {
+                ret->token = reg->token ; // pass token to another cell
+                reg->token = 0 ;
+                reg->token_bkoff = 0 ;
+            }
+            else if( reg->state == ENTT_NIL ) {
+                if( reg->token_bkoff > TOKEN_HOLD_THRESHHOLD ) {
+                    ret->token = reg->token ;
+                    reg->token = 0 ;
+                    reg->token_bkoff = 0 ;
+                }
+            }
         }
-    	switch(reg->entt) {
+    	switch(reg->state) {
     		case ENTT_NIL:
-    			if( field.tecktack ) {
-    				ret->tecktack = 1 ;  // got teck, returning tack
-    				reg->entt = ENTT_Rb ;    
-    				flag |= ENTL_ACTION_ENTT_RECV ;		
-    				reg->token = 0 ;		
+    			if( (field.recover == 0) && (field.entt == FIELD_ENTT) && !qfull ) {
+    				ret->entt = FIELD_ENTT ;  // got teck, returning tack
+    				reg->state = ENTT_Rb ;    
+    				flag |= ENTL_ACTION_ENTT_RECV ;	
     			}
     			break;
-    		default:
+            case ENTT_Rb:
+                if( field.entt == FIELD_ENTA ) {
+                    ret->entt = FIELD_ENTA ;  // got ack, returning ack
+                    reg->state = ENTT_NIL ; // complete ENTT 
+                    flag |= ENTL_ACTION_ENTT_FNSH ;                    
+                    //ENTL_DEBUG( "ENTT_Rb 1\n" ) ;
+                }
+                else {
+                    // error 
+                    reg->state = ENTT_NIL ; // cancel ENTT 
+                    flag |= (ENTL_ACTION_ENTT_DROP | ENTL_ACTION_ENTL_EROR) ;
+                    //ENTL_DEBUG( "ENTT_Rb 2\n" ) ;
+                }
+                break ; 
+    		default:  // reject if it's in Ra state (conflict)
     			break ; 
     	}
-		if ( reg->tt ) {
-			if( reg->tc > TC_THRESHHOLD ) {
-				flag |= ENTL_ACTION_RECOVER ;
-				reg->tc = 0 ;
-				reg->tf = 0 ;
-			}
-			else reg->tc++ ;
-		}
-		else reg->tc = 0 ;
+		//if ( reg->tt ) {
+		//	if( reg->tc > TC_THRESHHOLD ) {
+		//		flag |= ENTL_ACTION_ENTL_RECOVER ;
+        //        if( reg->tf ) flag |= ENTL_ACTION_ENTL_LKDN ;
+		//		reg->tc = 0 ;
+		//		reg->tf = 0 ;
+		//	}
+		//	else reg->tc++ ;
+		//}
+		//else reg->tc = 0 ;
+        //
+        //  Only SR side checks TC error
+        //
     	reg->tt = 1 ;
     }
     else {  // RR is received
@@ -82,18 +130,49 @@ int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, ec_link
     	ret->s_or_r = 1 ;
     	reg->sr = field.value ;
     	ret->value = !reg->sr  ;
-        reg->token = field.token ;
-    	switch(reg->entt) {
+        if( field.token ) {
+            reg->token = field.token ;
+            reg->entt_bkoff = 0 ;
+            reg->token_bkoff = 0 ;
+        }
+        // error recovery
+        if ( reg->tt == 0 ) {
+            if( reg->tc > TC_THRESHHOLD ) {
+                flag |= ENTL_ACTION_ENTL_RECOVER ;
+                if( reg->tf ) flag |= ENTL_ACTION_ENTL_LKDN ;
+                reg->tc = 0 ;
+                reg->tf = 0 ;
+            }
+            else reg->tc++ ;
+        }
+        else {
+            reg->tc = 0 ;
+            if( reg->tf == 0) flag |= ENTL_ACTION_ENTL_LKUP ;
+            reg->tf = 1 ;
+        }
+        reg->tt = 0 ;
+    	switch(reg->state) {
     		case ENTT_NIL:
-    			if( entt ) {
-    				if( reg->token || reg->entt_bkoff > TOKEN_BACKOFF_THRESHHOLD ) {
-						ret->tecktack = 1 ;  // Send teck
-    					reg->entt = ENTT_Ra ;    				
-						flag |= ENTL_ACTION_ENTT_STRT ;
-						reg->entt_bkoff = 0 ;
-    				}
-    				else reg->entt_bkoff++ ;
-    			}
+                if( field.recover == 0 ) 
+                {
+                    if( entt ) {
+                        if( reg->token ) {
+                            ret->entt = FIELD_ENTT ;  // Send teck
+                            reg->state = ENTT_Ra ;                  
+                            flag |= ENTL_ACTION_ENTT_STRT ;
+                            reg->token_bkoff++ ;
+                        }
+                        else if( ++reg->entt_bkoff > TOKEN_BACKOFF_THRESHHOLD )  // should use random to handle conflict 
+                        {
+                            ret->entt = FIELD_ENTT ;  // Send teck
+                            reg->state = ENTT_Ra ;                  
+                            flag |= ENTL_ACTION_ENTT_STRT ;
+                            reg->entt_bkoff = 0 ;
+                        }
+                    }
+                    //else reg->entt_bkoff++ ;
+                }
+
     			//else {
     			//	if( reg->token ) {
     			//		reg->token = 0 ;
@@ -102,68 +181,59 @@ int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, ec_link
     			//}
     			break;
     		case ENTT_Ra:
-                reg->entt = ENTT_NIL ; // complete ENTT 
-    			if( field.tecktack ) {
-					flag |= ENTL_ACTION_ENTT_DONE ;
-    				if( !entt ) {
-    					ret->token = 1 ;
-    					reg->token = 0 ;
-    				}
-    				else {
-    					if( reg->entt_bkoff > TOKEN_HOLD_THRESHHOLD ) {
-    						ret->token = 1 ;
-    						reg->token = 0 ;
-    						reg->entt_bkoff = 0 ;
-    					}
-    					else reg->entt_bkoff++ ;
-    				}
+    			if( field.recover != 1 ) {
+                    if( field.entt == FIELD_ENTL ) // rejected request
+                    {
+                        reg->state = ENTT_NIL ; // complete ENTT 
+                        flag |= ENTL_ACTION_ENTT_DROP ;
+                        reg->entt_bkoff++ ;
+                    }
+                    else if( field.entt == FIELD_ENTT ) {
+                        ret->entt = FIELD_ENTA ;  // send ack
+                        reg->state = ENTT_Rp ; // complete ENTT 
+                        flag |= ENTL_ACTION_ENTT_NEXT ;
+                    }
+                    else {
+                        reg->state = ENTT_NIL ; // impossible sequence 
+                        flag |= (ENTL_ACTION_ENTT_DROP | ENTL_ACTION_ENTL_EROR) ;
+                    }
     			}
     			else {
+                    reg->state = ENTT_NIL ; // terminate ENTT 
 					flag |= ENTL_ACTION_ENTT_DROP ;
-    				if( reg->token ) {
-    					ret->token = 1 ;
-    					reg->token = 0 ;
-    				}
-    				reg->entt_bkoff = 0 ; 
     			}
+                reg->entt_bkoff = 0 ; 
     			break ; 
-    		case ENTT_Rb:
-    			reg->entt = ENTT_NIL ; // complete ENTT 
-    			flag |= ENTL_ACTION_ENTT_FNSH ;
-    			break ; 
+            case ENTT_Rp:
+                reg->state = ENTT_NIL ; // complete ENTT 
+                if( field.recover ) {  // recover packet
+                    if( field.entt == FIELD_ENTA ) {
+                        flag |= ENTL_ACTION_ENTT_DROP ;
+                    }
+                    else if ( field.entt == FIELD_ENTL ) {
+                        flag |= ENTL_ACTION_ENTT_DONE ;
+                    }
+                    else {
+                        // error
+                        flag |= (ENTL_ACTION_ENTT_DROP | ENTL_ACTION_ENTL_EROR) ;
+                    }
+                    field.token = 0 ;  // on recover, token should be lost
+                }
+                else if( field.entt == FIELD_ENTA ) {
+                    flag |= ENTL_ACTION_ENTT_DONE ;
+                    reg->token = 1 ;
+                }
+                else {
+                    // error
+                    flag |= (ENTL_ACTION_ENTT_DROP | ENTL_ACTION_ENTL_EROR) ;                    
+                }
+                reg->entt_bkoff = 0 ; 
+                break ; 
+            default:
+                break ; 
     	}
-		// error recovery
-		if ( reg->tt == 0 ) {
-			if( reg->tc > TC_THRESHHOLD ) {
-				flag |= ENTL_ACTION_RECOVER ;
-				reg->tc = 0 ;
-				reg->tf = 0 ;
-			}
-			else reg->tc++ ;
-		}
-		else {
-			reg->tc = 0 ;
-			reg->tf = 1 ;
-		}
-    	reg->tt = 0 ;
     }
     
 	return flag ;
 }
 
-void ec_link_resend( ec_link_reg_t *reg, ec_link_field_t field, ec_link_field_t *ret ) 
-{
-    ret->_raw = 0 ;
-
-    // Resend does not start ENTT, as purpose is to restart ENTL condition
-    if( field.s_or_r ) {  // SR is received RR is sent
-    	ret->valid = 1 ; 
-    	ret->s_or_r = 1 ;  // SR side need to be resend
-    	ret->value = !reg->sr  ;
-    }
-    else {  // _SR is sent
-    	ret->valid = 1 ; 
-    	ret->s_or_r = 0 ;  // RR side need to be resend
-        ret->value = reg->rr ;
-    }
-}

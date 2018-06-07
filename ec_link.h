@@ -31,16 +31,27 @@ extern "C" {
 #define ENTT_NIL 0
 #define ENTT_Ra 1
 #define ENTT_Rb 2
+#define ENTT_Rp 3
+
+#define FIELD_ENTL 0
+#define FIELD_ENTT 1
+#define FIELD_ENTA 2
 
 #define TOKEN_BACKOFF_THRESHHOLD 4
 #define TOKEN_HOLD_THRESHHOLD 2
 
-#define ENTL_ACTION_RECOVER    0x01
-#define ENTL_ACTION_ENTT_STRT  0x02
-#define ENTL_ACTION_ENTT_DONE  0x04
-#define ENTL_ACTION_ENTT_RECV  0x08
-#define ENTL_ACTION_ENTT_FNSH  0x10
-#define ENTL_ACTION_ENTT_DROP  0x20
+#define ENTL_ACTION_ENTL_RECOVER    0x0001
+#define ENTL_ACTION_ENTT_STRT       0x0002
+#define ENTL_ACTION_ENTT_NEXT       0x0004
+#define ENTL_ACTION_ENTT_DONE       0x0008
+#define ENTL_ACTION_ENTT_RECV       0x0010
+#define ENTL_ACTION_ENTT_FNSH       0x0020
+#define ENTL_ACTION_ENTT_DROP       0x0040
+#define ENTL_ACTION_ENTT_CLER       0x0080
+#define ENTL_ACTION_ENTL_LKUP       0x0100
+#define ENTL_ACTION_ENTL_LKDN       0x0200
+#define ENTL_ACTION_ENTL_EROR       0x8000
+
 
 typedef struct ec_link_reg {
   union {
@@ -51,9 +62,10 @@ typedef struct ec_link_reg {
   		unsigned int tf:1 ;  // tf reg (indicate ENTL working)
       unsigned int token:1 ; // token (owned when entt is successed)
   		unsigned int tc:16 ; // tc reg (count toggle failure)
-      unsigned int entt:2 ; // 0: entl, 1: Ra, 2:Rb 
+      unsigned int state:2 ; // 0: entl, 1: Ra, 2:Rb, 3: Rp
       unsigned int entt_bkoff:4 ; // back off counter for entt retry
-  		unsigned int dummy:5 ;
+      unsigned int token_bkoff:4 ; // back off counter for token hold
+  		unsigned int dummy:1 ;
   	};
   	unsigned int _raw ;
   };
@@ -79,12 +91,13 @@ typedef struct ec_link_reg {
 typedef struct ec_link_field {
   union {
   	struct {
-  		unsigned int valid:1 ;  // valid0
-      unsigned int s_or_r:1 ;  // 1:s, 0:r
-  		unsigned int value:1 ;  // value
-      unsigned int tecktack:1; // TECK if s_or_r = 1, TACK if s_or_r = 0
+      unsigned int dummy: 9 ;
+      unsigned int recover:1;
       unsigned int token:1;    // pass token 
-  		unsigned int dummy: 11 ;
+      unsigned int entt:2;     // ENTT request, reply := TECK if s_or_r = 1, TACK if s_or_r = 0
+      unsigned int value:1 ;   // value
+      unsigned int s_or_r:1 ;  // 1:s, 0:r
+  		unsigned int valid:1 ;   // valid0
   	};
   	unsigned short _raw ;
   };
@@ -107,12 +120,19 @@ void ec_link_send( ec_link_reg_t *reg, ec_link_field_t *ret ) ;
  * @param reg : pointer to the EC_Link register
  * @param field : ec_link_field_t field in LSB 16bit of MAC destination address
  * @param entt : Request to transit to ENTT sequence if possible
+ * @param qfull : ENTT queue is full, so reject any more request
  * @param ret : pointer to ec_link_field_t to be placed at LSB 16bit of MAC destination address 
  *
  */
-int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, ec_link_field_t *ret ) ;
+int ec_link_action( ec_link_reg_t *reg, ec_link_field_t field, int entt, int qfull, ec_link_field_t *ret ) ;
 
-void ec_link_resend( ec_link_reg_t *reg, ec_link_field_t field, ec_link_field_t *ret ) ;
+/**
+ * @brief Generate recover field on TC error detection
+ * @param reg : pointer to the EC_Link register
+ * @param ret : pointer to ec_link_field_t to be placed at LSB 16bit of MAC destination address 
+ *
+ */
+int ec_link_recover( ec_link_reg_t *reg, ec_link_field_t *ret ) ;
 
 #ifdef __cplusplus 
 }

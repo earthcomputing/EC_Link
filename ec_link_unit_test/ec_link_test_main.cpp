@@ -76,6 +76,15 @@ TEST_F( EC_LinkUnitTest, EC_LinkENTT_LoopUnitTest ) {
 
 }
 
+TEST_F( EC_LinkUnitTest, EC_LinkENTT_TokenUnitTest ) {
+    int result ;
+
+    result = entt_token( &reg ) ;
+
+    EXPECT_EQ( result, 1 ) ;
+
+}
+
 GTEST_API_ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
 
