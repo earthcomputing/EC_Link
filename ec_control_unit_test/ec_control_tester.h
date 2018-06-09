@@ -39,7 +39,7 @@ int entt_ait_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 ) 
 
 int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 ) ;
 
-int entt_alo_resend( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 ) ;
+int entt_alo_cond_false( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 ) ;
 
 #ifdef __cplusplus 
 }

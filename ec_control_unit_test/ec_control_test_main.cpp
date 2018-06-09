@@ -88,17 +88,17 @@ TEST_F( EC_ControlUnitTest, EC_ControlALO_SequenceUnitTest ) {
     EXPECT_EQ( result, 1 ) ;
 
 }
-/*
+
 // Testing EC ALO resend case
-TEST_F( EC_ControlUnitTest, EC_ControlALO_ResendUnitTest ) {
+TEST_F( EC_ControlUnitTest, EC_ControlALO_CondFalseUnitTest ) {
     int result ;
 
-    result = entt_alo_resend( &mcn0, &mcn1 ) ;
+    result = entt_alo_cond_false( &mcn0, &mcn1 ) ;
 
     EXPECT_EQ( result, 1 ) ;
 
 }
-*/
+
 
 GTEST_API_ int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);

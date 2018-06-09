@@ -1356,24 +1356,26 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
 
     // First packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 3", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  0,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 3", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 4", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
     retval &= expect_link_state( "h_l link 4", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Second packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
 	if( (ret & ENTL_ACTION_SIG_LUP ) != ENTL_ACTION_SIG_LUP ){
 		ENTL_DEBUG( "entl_received 4 ret = %x  expect %x\n", ret & ENTL_ACTION_SIG_LUP, ENTL_ACTION_SIG_LUP ) ;
 		return 0 ;		
@@ -1384,9 +1386,10 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          1,          0 ) ;
     retval &= expect_link_state( "h_l link 5", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
 	if( (ret & ENTL_ACTION_SIG_LUP ) != ENTL_ACTION_SIG_LUP ){
 		ENTL_DEBUG( "entl_received 5 ret = %x  expect %x\n", ret & ENTL_ACTION_SIG_LUP, ENTL_ACTION_SIG_LUP ) ;
 		return 0 ;		
@@ -1396,171 +1399,189 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 6", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Third packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 7", addr,   1,     0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          1,          0 ) ;
     retval &= expect_link_state( "h_l link 7", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 8", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 8", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 9", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          2,          0 ) ;
     retval &= expect_link_state( "h_l link 9", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 10", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 10", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // First packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 11", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          2,          0 ) ;
     retval &= expect_link_state( "h_l link 11", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 12", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 12", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Second packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 13", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 13", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 14", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 14", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Third packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 15", addr,   1,     0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 15", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 16", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 16", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 17", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          4,          0 ) ;
     retval &= expect_link_state( "h_l link 17", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 18", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 18", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // First packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 19", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          4,          0 ) ;
     retval &= expect_link_state( "h_l link 19", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 20", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 20", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Second packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 21", addr,  1,      1,     0,        1,     0, ALO_WR, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff, token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0, ENTT_Ra,          0,           0 ) ;
     retval &= expect_link_state( "h_l link 21", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 22", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff, token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0,       0,          0,           0 ) ;
     retval &= expect_link_state( "h_l link 22", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Third packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 23", addr,   1,     0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0, ENTT_Ra,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 23", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 24", addr,  1,      0,     0,        1,     0, 0x0001, 0 ) ; // set T flag
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
@@ -1568,39 +1589,43 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     retval &= expect_link_state( "h_l link 24", mcn1, &reg ) ;
 	daddr0 = addr ;
 
+
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 25", addr,  1,      1,     1,        2,     0, 0x0001, 0 ) ; // set T flag
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0, 	ENTT_Rp,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 25", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 26", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0, ENTT_Rb,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 26", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Continuous ENTT sequence with token holding
 
     // First packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 27", addr,   1,     0,     1,        0,    0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0, ENTT_Rp,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 27", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
 	if( (ret & ( ENTL_ACTION_SIG_ALO ) ) != (ENTL_ACTION_SIG_ALO) ) {
 		ENTL_DEBUG( "entl_received 27 ret = %x  expect %x\n", (ret  ), (ENTL_ACTION_SIG_ALO) ) ;
 		//return 0 ;
@@ -1611,54 +1636,75 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 28", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Second packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 29", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     1,  0, ENTT_NIL,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 29", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
+
 	if( (ret & (ENTL_ACTION_SIG_ALO ) ) != (ENTL_ACTION_SIG_ALO) ) {
 		ENTL_DEBUG( "entl_received 29 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SIG_ALO) ) ;
 		//return 0 ;
 	}
+
+    retval &= check_untouched( &mcn0->ao, &src_copy, 100 ) ;  
+    retval &= check_untouched( &mcn1->ao, &dst_copy, 0 ) ;
+    if( mcn1->ao.reg[0] != wr_data ) {
+		ENTL_DEBUG( "mc1->ao.reg[0] = %lx  expect %lx\n", mcn1->ao.reg[0], wr_data ) ;
+		retval = 0 ;	
+    }
+
+    rand_regs( &mcn0->ao ) ;
+    rand_regs( &mcn1->ao ) ;
+
+    copy_regs(&mcn0->ao, &src_copy) ;
+    copy_regs(&mcn1->ao, &dst_copy) ;
+    wr_data = mcn1->ao.reg[0] ;
+
 		//ENTL_DEBUG( "entl_received 29 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SIG_AIT | ENTL_ACTION_DROP_AIT) ) ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 30", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 30", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Third packet received
     //  Token passing to mcn1
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         0,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 31", addr,   1,     0,     0,        0,     1, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0, ENTT_NIL,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 31", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 32", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0, ENTT_NIL,          0,          0 ) ;
     retval &= expect_link_state( "h_l link 32", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         0,      ALO_WR,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
 	if( (ret & (ENTL_ACTION_SEND) ) != (ENTL_ACTION_SEND) ) {
 		ENTL_DEBUG( "entl_received 33 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SEND) ) ;
 		//return 0 ;
@@ -1669,30 +1715,32 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  0,  0,  0,  1,     0,  0,    ENTT_NIL,          1,         0 ) ;
     retval &= expect_link_state( "h_l link 33", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,      ALO_WR,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 34", addr,  1,      1,     1,        1,     0, ALO_WR, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     1,  0, ENTT_Ra,          0,          1 ) ;
     retval &= expect_link_state( "h_l link 34", mcn1, &reg ) ;
 	daddr1 = addr ;
-
+	data1 = data ;
 
     // First packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 35", addr,   1,     0,     1,       1,     0,  0x0001, 0 ) ; // set T flag
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0, ENTT_Rb,          1,          0 ) ;
     retval &= expect_link_state( "h_l link 35", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
 	// Reject ENTT due to queue full
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
 	if( (ret & (ENTL_ACTION_SEND) ) != (ENTL_ACTION_SEND) ) {
 		ENTL_DEBUG( "entl_received 36 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SEND) ) ;
 		return 0 ;
@@ -1703,33 +1751,36 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  0,  1,  1,  1,     1,  0, ENTT_Ra,          0,          1 ) ;
     retval &= expect_link_state( "h_l link 36", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
 	//dump_state( "mcn0 36", mcn0 ) ;
 
     // Second packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 37", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0, ENTT_Rb,          1,          0 ) ;
     retval &= expect_link_state( "h_l link 37", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
 	//dump_state( "mcn0 37", mcn0 ) ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 38", addr,  1,      1,     0,        2,     0, 0x0001, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     1,  0, ENTT_Rp,          0,          1 ) ;
     retval &= expect_link_state( "h_l link 38", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Third packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
 	if( (ret & (ENTL_ACTION_SIG_ALO) ) != (ENTL_ACTION_SIG_ALO) ) {
 		ENTL_DEBUG( "entl_received 39 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SIG_ALO) ) ;
 		//return 0 ;
@@ -1740,28 +1791,31 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          1,          0 ) ;
     retval &= expect_link_state( "h_l link 39", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 40", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     1,  0, ENTT_Rp,          0,          1 ) ;
     retval &= expect_link_state( "h_l link 40", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 41", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          2,          0 ) ;
     retval &= expect_link_state( "h_l link 41", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
 	if( (ret & (ENTL_ACTION_SIG_ALO) ) != (ENTL_ACTION_SIG_ALO) ) {
 		ENTL_DEBUG( "entl_received 41 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SIG_ALO) ) ;
 		//return 0 ;
@@ -1772,184 +1826,218 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     set_state(   &reg,  0,  0,  0,  1,     1,  0, ENTT_NIL,          0,          1 ) ;
     retval &= expect_link_state( "h_l link 42", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
+
+    retval &= check_untouched( &mcn0->ao, &src_copy, 0 ) ;  
+    retval &= check_untouched( &mcn1->ao, &dst_copy, 100 ) ;
+    if( mcn1->ao.reg[0] != wr_data ) {
+		ENTL_DEBUG( "mc1->ao.reg[0] = %lx  expect %lx\n", mcn1->ao.reg[0], wr_data ) ;
+		retval = 0 ;	
+    }
+
+    rand_regs( &mcn0->ao ) ;
+    rand_regs( &mcn1->ao ) ;
+
+    copy_regs(&mcn0->ao, &src_copy) ;
+    copy_regs(&mcn1->ao, &dst_copy) ;
+    wr_data = mcn1->ao.reg[0] ;
+
 
     // Third packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 43", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     0,  0, ENTT_NIL,          2,          0 ) ;
     retval &= expect_link_state( "h_l link 43", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 44", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     1,  0, ENTT_NIL,          0,          1 ) ;
     retval &= expect_link_state( "h_l link 44", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 45", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     0,  0, ENTT_NIL,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 45", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
 	// Recover case
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         0,      ALO_WR,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 46", addr,  1,      1,     0,        1,     0, ALO_WR, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  1,  0,  1,     1,  0, ENTT_Ra,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 46", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Third packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 47", addr,   1,     0,     0,        1,     0, 0x0001, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     0,  0, ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 47", mcn0, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
 
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 48", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  1,  1,     1,  0,  ENTT_Ra,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 48", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 49", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  0, ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 49", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr1,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 50", addr,  1,      1,     1,        2,     0, 0x0001, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     1,  0, ENTT_Rp,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 50", mcn1, &reg ) ;
 	daddr1 = addr ;
+	data1 = data ;
 
     // Assume we lost the message above, receiver mcn0 stays in Rb
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 51", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     1,  0,  ENTT_Rp,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 51", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 52", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  0,  1,     0,  1, ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 52", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 53", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  1,  1,     1,  0,  ENTT_Rp,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 53", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 54", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  2, ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 54", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 55", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     1,  0,  ENTT_Rp,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 55", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 56", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  0,  1,     0,  3, ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 56", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 57", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  1,  1,     1,  0,  ENTT_Rp,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 57", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 58", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  0,  0,  1,     0,  4, ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 58", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn1, daddr0,       0,         1,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 59", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  1,  1,     1,  0,  ENTT_Rp,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 59", mcn1, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
     // Forth packet received
     //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
-	ret = entl_received( mcn0, daddr0,       0,         1,           0,            0, &addr, &data0 ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
     //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
 	retval &= check_daddr( "h_l 60", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  1,  0,  0,  0,     0,  0,  ENTT_Rb,          3,          0 ) ;
     retval &= expect_link_state( "h_l link 60", mcn0, &reg ) ;
 	daddr0 = addr ;
+	data0 = data ;
 
 	if( !(ret & ENTL_ACTION_RECOVER) ) {
 		ENTL_DEBUG( "55 entl_received ret = %x\n", ret ) ;
@@ -1972,11 +2060,14 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     retval &= expect_link_state( "h_l link 61", mcn0, &reg ) ;
 
 	// Missing Packet resend
-	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data1 ) ;
+	ret = entl_received( mcn1, daddr1,       0,         0,           0,            0, &addr, &data ) ;
 		ENTL_DEBUG( "entl_received 62 ret = %x  expect %x\n", ret, ENTL_ACTION_SEND ) ;
 	// set_state( reg, sr, rr, tt, tf, token, tc,     entt, entt_bkoff,token_bkoff )
     set_state(   &reg,  0,  1,  0,  1,     1,  0,  ENTT_NIL,          0,          2 ) ;
     retval &= expect_link_state( "h_l link 59", mcn1, &reg ) ;
+
+    retval &= check_untouched( &mcn0->ao, &src_copy, 100 ) ;  
+    retval &= check_untouched( &mcn1->ao, &dst_copy, 100 ) ;
 
 
 
@@ -1986,6 +2077,340 @@ int entt_alo_sequence( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 )
     return retval ;	
 }
 
+int entt_alo_cond_false( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 ) 
+{
+	uint64_t addr, daddr0, daddr1 ;
+	uint64_t data, data0, data1, wr_data ;
+	int retval, ret ;
+    ec_link_reg_t reg ;
+
+	entl_state_init( mcn0, &daddr0 ) ;
+    //    check_daddr(     str,     daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval = check_daddr( "h_l 1", daddr0,     1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  0,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 1", mcn0, &reg ) ;
+
+	entl_state_init( mcn1, &daddr1 ) ;
+    //    check_daddr(     str,      daddr, valid, s_or_r, value, tecktack, token,  opcode )
+	retval &= check_daddr( "h_l 2", daddr1,     1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+    retval &= expect_link_state( "h_l link 2", mcn1, &reg ) ;
+       // entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) 
+
+	//dump_state( "mcn0 0", mcn0 ) ;
+	//dump_state( "mcn1 0", mcn1 ) ;
+
+    rand_regs( &mcn0->ao ) ;
+    rand_regs( &mcn1->ao ) ;
+
+    copy_regs(&mcn0->ao, &src_copy) ;
+    copy_regs(&mcn1->ao, &dst_copy) ;
+    wr_data = mcn0->ao.reg[0] ;
+
+    // First packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,       0,         1,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 3", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  0,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 3", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 4", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
+    retval &= expect_link_state( "h_l link 4", mcn1, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    // Second packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,           0,            0, &addr, &data ) ;
+	if( (ret & ENTL_ACTION_SIG_LUP ) != ENTL_ACTION_SIG_LUP ){
+		ENTL_DEBUG( "entl_received 4 ret = %x  expect %x\n", ret & ENTL_ACTION_SIG_LUP, ENTL_ACTION_SIG_LUP ) ;
+		return 0 ;		
+	}
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 5", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          1,          0 ) ;
+    retval &= expect_link_state( "h_l link 5", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
+	if( (ret & ENTL_ACTION_SIG_LUP ) != ENTL_ACTION_SIG_LUP ){
+		ENTL_DEBUG( "entl_received 5 ret = %x  expect %x\n", ret & ENTL_ACTION_SIG_LUP, ENTL_ACTION_SIG_LUP ) ;
+		return 0 ;		
+	}
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 6", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
+    set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 6", mcn1, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    // Third packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 7", addr,   1,     0,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          1,          0 ) ;
+    retval &= expect_link_state( "h_l link 7", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 8", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 8", mcn1, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    // Forth packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 9", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          2,          0 ) ;
+    retval &= expect_link_state( "h_l link 9", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 10", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 10", mcn1, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    // First packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 11", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          2,          0 ) ;
+    retval &= expect_link_state( "h_l link 11", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 12", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 12", mcn1, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    // Second packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 13", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          3,          0 ) ;
+    retval &= expect_link_state( "h_l link 13", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 14", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  1,  0,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 14", mcn1, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    // Third packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 15", addr,   1,     0,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          3,          0 ) ;
+    retval &= expect_link_state( "h_l link 15", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 16", addr,  1,      0,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  0,  1,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 16", mcn1, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    // Forth packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 17", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          4,          0 ) ;
+    retval &= expect_link_state( "h_l link 17", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 18", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 18", mcn1, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    // First packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 19", addr,   1,     0,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          4,          0 ) ;
+    retval &= expect_link_state( "h_l link 19", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 20", addr,  1,      0,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 20", mcn1, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    // Second packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR | 0x1,            0, &addr, &data ) ; // cond EQ
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 21", addr,  1,      1,     0,        1,     0, ALO_WR | 0x1 , 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff, token_bkoff )
+    set_state(   &reg,  1,  1,  0,  1,     0,  0, ENTT_Ra,          0,           0 ) ;
+    retval &= expect_link_state( "h_l link 21", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 22", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff, token_bkoff )
+    set_state(   &reg,  1,  1,  0,  1,     0,  0,       0,          0,           0 ) ;
+    retval &= expect_link_state( "h_l link 22", mcn1, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    // Third packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 23", addr,   1,     0,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  0,  1,  1,     0,  0, ENTT_Ra,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 23", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 24", addr,  1,      0,     0,        1,     0, 0x0000, 0 ) ; // set T flag
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  0,  1,  1,     0,  0, ENTT_Rb,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 24", mcn1, &reg ) ;
+	daddr0 = addr ;
+
+
+    // Forth packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 25", addr,  1,      1,     1,        2,     0, 0x0000, 0 ) ; // set T flag
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  1,     0,  0, 	ENTT_Rp,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 25", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr1,   data1,         0,           0,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 26", addr,  1,      1,     1,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  0,  0,  1,     0,  0, ENTT_Rb,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 26", mcn1, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    // Continuous ENTT sequence with token holding
+
+    // First packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr1,   data1,         0,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 27", addr,   1,     0,     1,        0,    0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  1,     0,  0, ENTT_Rp,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 27", mcn0, &reg ) ;
+	daddr1 = addr ;
+	data1 = data ;
+
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn1, daddr0,   data0,         0,           0,            0, &addr, &data ) ;
+	if( (ret & ( ENTL_ACTION_SIG_ALO ) ) != (ENTL_ACTION_SIG_ALO) ) {
+		ENTL_DEBUG( "entl_received 27 ret = %x  expect %x\n", (ret  ), (ENTL_ACTION_SIG_ALO) ) ;
+		//return 0 ;
+	}
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 28", addr,  1,      0,     1,        2,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc, entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  0,  1,  1,  1,     0,  0,    0,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 28", mcn1, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+    // Second packet received
+    //    entl_received( *mcn, d_addr, s_value, ait_queue, ait_command, egress_queue, *addr, *alo_data ) ;
+	ret = entl_received( mcn0, daddr0,   data0,         1,      ALO_WR,            0, &addr, &data ) ;
+    //    check_daddr(     str, daddr, valid, s_or_r, value, tecktack, token,  opcode  )
+	retval &= check_daddr( "h_l 29", addr,  1,      1,     0,        0,     0, ALO_NOP, 0 ) ;
+	// set_state( reg, sr, rr, tt, tf, token, tc,    entt, entt_bkoff,token_bkoff )
+    set_state(   &reg,  1,  1,  0,  1,     1,  0, ENTT_NIL,          0,          0 ) ;
+    retval &= expect_link_state( "h_l link 29", mcn0, &reg ) ;
+	daddr0 = addr ;
+	data0 = data ;
+
+	if( (ret & (ENTL_ACTION_SIG_ALO ) ) != (ENTL_ACTION_SIG_ALO) ) {
+		ENTL_DEBUG( "entl_received 29 ret = %x  expect %x\n", (ret ), (ENTL_ACTION_SIG_ALO) ) ;
+		//return 0 ;
+	}
+
+    retval &= check_untouched( &mcn0->ao, &src_copy, 100 ) ;  
+    retval &= check_untouched( &mcn1->ao, &dst_copy, 100 ) ;
+
+}
 
 int entt_alo_sequence_p( entl_state_machine_t *mcn0, entl_state_machine_t *mcn1 ) 
 {
