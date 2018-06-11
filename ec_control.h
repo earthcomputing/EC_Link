@@ -59,7 +59,10 @@ typedef volatile struct entl_state_machine {
   alo_regs_t ao ;
   uint32_t last_alo_command ;       // keep last alo command for completion
   uint64_t last_d_addr ;       // keep d_addr on AIT for further propergation
-  uint64_t retry_count ;			// how many recover happened
+  uint64_t recover_count ;			// how many recover happened
+  uint64_t recovered_count ;			// how many recovered happened
+  uint64_t s_count ;			// how many s message happened
+  uint64_t r_count ;			// how many r message happened
   uint64_t entt_count ;			    // how many entt transaction happened
   uint64_t aop_count ;			    // how many aop transaction happened
 #ifndef NETRONOME_CHIP

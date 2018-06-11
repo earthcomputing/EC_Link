@@ -59,7 +59,7 @@ void dump_state( char *str, entl_state_machine_t *mcn )
 		mcn->last_alo_command, mcn->last_d_addr 
 	) ;    
 	
-    ENTL_DEBUG( "  retry_count: %lx entt_count: %x aop_count: %x \n", mcn->retry_count, mcn->entt_count, mcn->aop_count ) ;
+    ENTL_DEBUG( "  recover_count: %lx recovered_count: %lx entt_count: %x aop_count: %x \n", mcn->recover_count, mcn->recovered_count, mcn->entt_count, mcn->aop_count ) ;
 
 }
 

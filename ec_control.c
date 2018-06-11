@@ -26,7 +26,10 @@ void entl_state_init( __lmem entl_state_machine_t *mcn, uint64_t *addr )
 
     alo_regs_init( &mcn->ao ) ;
 
-    mcn->retry_count = 0 ;
+    mcn->recover_count = 0 ;
+    mcn->recovered_count = 0 ;
+    mcn->s_count = 0 ;
+    mcn->r_count = 0 ;
     mcn->entt_count = 0 ;
     mcn->aop_count = 0 ;
 
@@ -45,6 +48,18 @@ int entl_received( __lmem entl_state_machine_t *mcn, uint64_t d_addr, uint64_t s
  	flag = ait_queue || ALO_COMMAND_OPCODE(alo_command) ;
  	qfull = is_ENTT_queue_full( egress_queue ) ;
 	fld_in._raw = GET_ECLP_VALUE(d_addr) ;
+
+    if( fld_in.valid == 1 ) {
+        if( fld_in.recover == 1 ) {
+            mcn->recovered_count++ ;
+        }
+        if( fld_in.s_or_r == 1 ) {
+            mcn->s_count++ ;
+        }
+        else {
+            mcn->r_count++ ;
+        }
+    }
 
 	ret = ec_link_action( &mcn->reg, fld_in, flag, qfull, &fld_out ) ;
 	*addr = fld_out._raw ;  // lsb is the field
@@ -161,6 +176,7 @@ int entl_recover( __lmem entl_state_machine_t *mcn, uint64_t *addr )
 
     ret = ec_link_recover( &mcn->reg, &fld_out ) ;
 	*addr = fld_out._raw ;  // lsb is the field
+    mcn->recover_count++ ;
 
 	if( ret & ENTL_ACTION_ENTT_CLER ) {
 		if( mcn->last_alo_command == 0 ) {
