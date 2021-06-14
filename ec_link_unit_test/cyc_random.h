@@ -1,14 +1,7 @@
-
-/*
- * Copyright (C) 2017,  Earth Computing Inc.  All rights reserved.
- *
- *
- * @file          cyc_random.h
- * @brief         Cyclic random generator 
- *
- * Author:        Atsushi Kasuya
- *
- */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright © 2017-present Earth Computing Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 #ifndef _CYC_RANDOM_H_
 #define _CYC_RANDOM_H_
 

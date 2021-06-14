@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2017,2018,  Earth Computing Inc.  All rights reserved.
- *
- *
- * @file          alo_tester.c
- * @brief         Atomic Link Operation Tester
- *
- * Author:        Atsushi Kasuya
- *
- */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright © 2017-present Earth Computing Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 
 #include <stdio.h>

@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2018,  Earth Computing Inc.  All rights reserved.
- *
- *
- * @file          ec_link_tester.c
- * @brief         EC_Link Tester
- *
- * Author:        Atsushi Kasuya
- *
- */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright © 2018-present Earth Computing Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 #include <stdio.h>
 #include <stdlib.h>

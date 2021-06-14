@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2018,  Earth Computing Inc.  All rights reserved.
- *
- *
- * @file          ec_control.h
- * @brief         ENTL state machine 
- *
- * Author:        Atsushi Kasuya
- *
- */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright © 2018-present Earth Computing Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 #ifndef _EC_CONTROL_H_
 #define _EC_CONTROL_H_

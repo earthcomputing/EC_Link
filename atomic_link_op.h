@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2017,  Earth Computing Inc.  All rights reserved.
- *
- *
- * @file          atomic_link_op.h
- * @brief         Atomic Link Operation  
- *
- * Author:        Atsushi Kasuya
- *
- */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright © 2017-present Earth Computing Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 #ifndef _ATOMIC_LINK_OP_H_
 #define _ATOMIC_LINK_OP_H_

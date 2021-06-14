@@ -1,13 +1,7 @@
-/*
- * Copyright (C) 2018,  Earth Computing Inc.  All rights reserved.
- *
- *
- * @file          ec_control_tester.h
- * @brief         EC_Control Tester
- *
- * Author:        Atsushi Kasuya
- *
- */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright © 2018-present Earth Computing Corporation. All rights reserved.
+ *  Licensed under the MIT License. See LICENSE.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 #ifndef _EC_CONTROL_TESTER_H_
 #define _EC_CONTROL_TESTER_H_
